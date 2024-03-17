@@ -62,4 +62,4 @@ def inventory():
 
 if __name__ == '__main__':
     create_table()
-    app.run(host='10.8.2.248', port=5000, debug=True)
+    app.run(host='10.8.1.248', port=5000, debug=True)
