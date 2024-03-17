@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Entry</title>
+</head>
+<body>
+    <h1>Add Inventory Entry</h1>
+    <form action="/read" method="post">
+        {% for entry in entries %}
+        <!-- <td>{{ entry[0] }}</td>
+            <td>{{ entry[1] }}</td>
+            <td>{{ entry[2] }}</td>
+            <td>{{ entry[3] }}</td>
+            <td>{{ entry[4] }}</td>
+            <td>{{ entry[5] }}</td>
+            <td>{{ entry[6] }}</td>
+            <td>{{ entry[7] }}</td> -->
+        {% include 'formulaire.html' %}
+        {% endfor %}
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
