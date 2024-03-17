@@ -32,6 +32,14 @@ def insert_entry(nom, grade, machine, reseau, adresse_mac, num_bureau, etage):
     conn.commit()
     conn.close()
 
+def update_entry(id, nom, grade, machine, reseau, adresse_mac, num_bureau, etage):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute('''update inventory  set nom = ?, grade = ?, machine = ?, reseau = ?, adresse_mac= ?, num_bureau=?, etage=?
+                      where id =?''', (nom, grade, machine, reseau, adresse_mac, num_bureau, etage, id))
+    conn.commit()
+    conn.close()
+
 # Route pour afficher le formulaire de saisie
 # @app.route('/')
 # def index():
@@ -67,13 +75,25 @@ def create():
     return render_template('create.html')
 
 
-@app.route('/update/<string:id>')
+@app.route('/read/<string:id>')
 def read(id):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     entries = cursor.execute("SELECT * FROM inventory where id=?", (id)).fetchall()
     print(entries)
-    return render_template('read.html', entries=entries)
+    return render_template('read.html', entries=entries, entry_id=id)
+
+@app.route('/update/<string:id>', methods=['POST'])
+def update(id):
+    nom = request.form['nom']
+    grade = request.form['grade']
+    machine = request.form['machine']
+    reseau = request.form['reseau']
+    adresse_mac = request.form['adresse_mac']
+    num_bureau = request.form['num_bureau']
+    etage = request.form['etage']
+    update_entry(id, nom, grade, machine, reseau, adresse_mac, num_bureau, etage)
+    return redirect(url_for('inventory'))
 
 @app.route('/delete/<string:id>')
 def delete(id):
