@@ -33,9 +33,19 @@ def insert_entry(nom, grade, machine, reseau, adresse_mac, num_bureau, etage):
     conn.close()
 
 # Route pour afficher le formulaire de saisie
+# @app.route('/')
+# def index():
+#     return render_template('index.html')
+
+# Route pour afficher toutes les entrées de l'inventaire
 @app.route('/')
-def index():
-    return render_template('index.html')
+def inventory():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute('''SELECT * FROM inventory''')
+    entries = cursor.fetchall()
+    conn.close()
+    return render_template('inventory.html', entries=entries)
 
 # Route pour traiter les données du formulaire
 @app.route('/add', methods=['POST'])
@@ -48,18 +58,32 @@ def add_entry():
     num_bureau = request.form['num_bureau']
     etage = request.form['etage']
     insert_entry(nom, grade, machine, reseau, adresse_mac, num_bureau, etage)
-    return redirect(url_for('index'))
+    return redirect(url_for('inventory'))
 
-# Route pour afficher toutes les entrées de l'inventaire
-@app.route('/inventory')
-def inventory():
+@app.route('/create')
+def create():
+    entries = list()
+    entries.append([None] * 10)
+    return render_template('create.html')
+
+
+@app.route('/update/<string:id>')
+def read(id):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute('''SELECT * FROM inventory''')
-    entries = cursor.fetchall()
-    conn.close()
+    entries = cursor.execute("SELECT * FROM inventory where id=?", (id)).fetchall()
+    print(entries)
+    return render_template('read.html', entries=entries)
+
+@app.route('/delete/<string:id>')
+def delete(id):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    entries = cursor.execute("DELETE FROM inventory where id=?", (id))
+    conn.commit()
     return render_template('inventory.html', entries=entries)
+
 
 if __name__ == '__main__':
     create_table()
-    app.run(host='10.8.1.248', port=5000, debug=True)
+    app.run(host='127.0.0.1', port=8888, debug=True)
